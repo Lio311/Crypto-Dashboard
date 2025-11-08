@@ -138,7 +138,7 @@ def run_advanced_analysis():
     try:
         # 1. Correlation Analysis
         print("... Calculating correlation...")
-        # --- FIX: Added group_by='column' to flatten the columns ---
+        # --- FIX 2: Added group_by='column' to flatten the columns ---
         df_corr = yf.download(["BTC-USD", "ETH-USD", "SOL-USD"], period="3mo", progress=False, group_by='column')['Close']
         returns = df_corr.pct_change().dropna()
         corr_btc_eth = returns['BTC-USD'].rolling(30).corr(returns['ETH-USD']).iloc[-1]
@@ -150,7 +150,7 @@ def run_advanced_analysis():
 
         # 2. Cyclical Analysis (FFT) on Bitcoin
         print("... Calculating FFT...")
-         # --- FIX: Added group_by='column' to flatten the columns ---
+         # --- FIX 3: Added group_by='column' to flatten the columns ---
         df_btc = yf.download("BTC-USD", period="2y", progress=False, group_by='column')['Close']
         data = df_btc.values
         
