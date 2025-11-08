@@ -1,0 +1,46 @@
+name: Run Crypto Engine
+
+on:
+  push:
+    branches:
+      - main  # Run on push to main
+  schedule:
+    - cron: '*/30 * * * *' # Run every 30 minutes
+  workflow_dispatch: # Allows manual run from GitHub Actions tab
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r 4_requirements.txt
+
+      - name: Run Python Engine
+        # Inject the GitHub secrets into environment variables
+        # The Python script (os.environ.get) will read these
+        env:
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+        run: |
+          python 5_engine.py
+
+      - name: Commit data files
+        # This step saves the updated JSON files back to the repo
+        run: |
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'bot@github.com'
+          git add market_scan.json advanced_analysis.json
+          # Commit only if there are changes
+          git diff --staged --quiet || git commit -m "Auto-Update: Market data"
+          git push
