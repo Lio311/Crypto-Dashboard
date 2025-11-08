@@ -33,7 +33,7 @@ jobs:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
         run: |
-          python 5_engine.py
+          python engine.py
 
       - name: Commit data files
         # This step saves the updated JSON files back to the repo
