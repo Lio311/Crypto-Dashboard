@@ -26,7 +26,7 @@ def run_market_scanner():
     
     for ticker in SCAN_LIST:
         try:
-            # --- FIX: Added group_by='column' to flatten the columns ---
+            # --- FIX #1: Added group_by='column' to flatten the columns ---
             data = yf.download(ticker, period="1y", progress=False, group_by='column')
             if data.empty: continue
                 
@@ -102,10 +102,10 @@ def check_for_alerts(df):
     try:
         # Specific alert for Bitcoin
         btc_data = df[df['מטבע'] == 'BTC-USD'].iloc[0]
-        if btc_data['RSI (14)'] < 30:
-            alerts.append(f"🔴 BTC Alert: Oversold! RSI: {btc_data['RSI (14)']:.2f}")
-        if btc_data['RSI (14)'] > 70:
-            alerts.append(f"🟠 BTC Alert: Overbought! RSI: {btc_data['RSI (14)']:.2f}")
+        if btc_data['RSI_14'] < 30:
+            alerts.append(f"🔴 BTC Alert: Oversold! RSI: {btc_data['RSI_14']:.2f}")
+        if btc_data['RSI_14'] > 70:
+            alerts.append(f"🟠 BTC Alert: Overbought! RSI: {btc_data['RSI_14']:.2f}")
     except Exception as e:
         print(f"Error checking BTC alert: {e}")
 
@@ -113,7 +113,7 @@ def check_for_alerts(df):
     oversold = df[df['סיגנל RSI'] == "Oversold"]
     for _, row in oversold.iterrows():
         if row['מטבע'] != 'BTC-USD': # We already handled Bitcoin
-            alerts.append(f"🟢 Opportunity Alert: {row['מטבע']} is Oversold. RSI: {row['RSI (14)']:.2f}")
+            alerts.append(f"🟢 Opportunity Alert: {row['מטבע']} is Oversold. RSI: {row['RSI_14']:.2f}")
 
     if not alerts:
         print("No new alerts.")
@@ -138,7 +138,7 @@ def run_advanced_analysis():
     try:
         # 1. Correlation Analysis
         print("... Calculating correlation...")
-        # --- FIX 2: Added group_by='column' to flatten the columns ---
+        # --- FIX #2: Added group_by='column' to flatten the columns ---
         df_corr = yf.download(["BTC-USD", "ETH-USD", "SOL-USD"], period="3mo", progress=False, group_by='column')['Close']
         returns = df_corr.pct_change().dropna()
         corr_btc_eth = returns['BTC-USD'].rolling(30).corr(returns['ETH-USD']).iloc[-1]
@@ -150,7 +150,7 @@ def run_advanced_analysis():
 
         # 2. Cyclical Analysis (FFT) on Bitcoin
         print("... Calculating FFT...")
-         # --- FIX 3: Added group_by='column' to flatten the columns ---
+         # --- FIX #3: Added group_by='column' to flatten the columns ---
         df_btc = yf.download("BTC-USD", period="2y", progress=False, group_by='column')['Close']
         data = df_btc.values
         
