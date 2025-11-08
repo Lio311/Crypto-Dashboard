@@ -7,7 +7,7 @@ from plotly.subplots import make_subplots
 import google.generativeai as genai 
 
 st.set_page_config(layout="wide", page_title="Deep Dive Analysis")
-st.title("📈 ניתוח טכני מעמיק")
+st.title("ניתוח טכני מעמיק")
 
 # --- Configure Gemini API Key ---
 try:
@@ -36,8 +36,9 @@ selected_period = period_map[timeframe]
 # --- Data Processing Logic ---
 @st.cache_data(ttl=300) # Cache for 5 minutes
 def get_data(ticker, period):
-    # --- FIX: Added group_by='column' to flatten the columns ---
+    # --- FIX #4: Added group_by='column' to flatten the columns ---
     df = yf.download(ticker, period=period, group_by='column')
+    
     if df.empty: return None
     df.ta.sma(length=50, append=True)
     df.ta.sma(length=200, append=True)
@@ -57,18 +58,7 @@ def get_gemini_analysis(prompt):
         return f"Error generating analysis: {e}"
 
 # --- Run and Collect Data ---
-@st.cache_data(ttl=300) # Cache for 5 minutes
-def get_data(ticker, period):
-    # --- התיקון כאן ---
-    df = yf.download(ticker, period=period, group_by='column')
-    
-    if df.empty: return None
-    df.ta.sma(length=50, append=True)
-    df.ta.sma(length=200, append=True)
-    df.ta.rsi(length=14, append=True)
-    df.ta.bbands(length=20, std=2, append=True)
-    df = df.dropna()
-    return df
+data_df = get_data(ticker, selected_period)
 
 if data_df is None or data_df.empty:
     st.error("לא הצלחתי להוריד נתונים. נסה מטבע או טווח זמן אחר.")
