@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r 4_requirements.txt
+          pip install -r requirements.txt
 
       - name: Run Python Engine
         # Inject the GitHub secrets into environment variables
