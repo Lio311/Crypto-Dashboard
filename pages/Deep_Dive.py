@@ -57,7 +57,18 @@ def get_gemini_analysis(prompt):
         return f"Error generating analysis: {e}"
 
 # --- Run and Collect Data ---
-data_df = get_data(ticker, selected_period)
+@st.cache_data(ttl=300) # Cache for 5 minutes
+def get_data(ticker, period):
+    # --- התיקון כאן ---
+    df = yf.download(ticker, period=period, group_by='column')
+    
+    if df.empty: return None
+    df.ta.sma(length=50, append=True)
+    df.ta.sma(length=200, append=True)
+    df.ta.rsi(length=14, append=True)
+    df.ta.bbands(length=20, std=2, append=True)
+    df = df.dropna()
+    return df
 
 if data_df is None or data_df.empty:
     st.error("לא הצלחתי להוריד נתונים. נסה מטבע או טווח זמן אחר.")
