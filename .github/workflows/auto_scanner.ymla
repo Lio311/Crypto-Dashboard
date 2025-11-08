@@ -1,4 +1,4 @@
-#name: Run Crypto Engine
+name: Run Crypto Engine
 
 on:
   push:
